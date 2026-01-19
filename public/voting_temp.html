@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting - Pemilihan OSIS & MPK</title>
+    <meta name="description" content="Pilih kandidat OSIS dan MPK favorit Anda">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        :root {
+            --card-height: 500px;
+            --card-width: calc(var(--card-height) / 1.5);
+        }
+
+        .voting-header {
+            background: var(--gradient-primary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .voting-header h1 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .voting-header p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-full);
+            border: 2px solid var(--border);
+        }
+
+        .step.active {
+            background: var(--gradient-primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .step.completed {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        /* 3D Card Styles */
+        .candidate-card {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 0 36px;
+            perspective: 2500px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .candidate-card.selected {
+            transform: scale(1.05);
+        }
+
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            filter: blur(0);
+            transition: 0.5s ease;
+        }
+
+        .wrapper {
+            position: absolute;
+            background-color: #fff;
+            border: 4px solid #fff;
+            border-radius: 12px;
+            width: 100%;
+            height: 500px;
+            z-index: -1;
+            transition: 0.5s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .candidate-card:hover .wrapper {
+            transform: perspective(900px) translateY(-5%) rotateX(25deg) translateZ(0);
+            box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+        }
+
+        .wrapper::before,
+        .wrapper::after {
+            content: "";
+            opacity: 0;
+            width: 100%;
+            height: 80px;
+            transition: 0.5s ease;
+            position: absolute;
+            border-radius: 10px;
+            left: 0;
+        }
+
+        .wrapper::before {
+            top: 0;
+            height: 100%;
+            background-image: linear-gradient(to top,
+                    transparent 46%,
+                    rgba(12, 13, 19, 0.5) 68%,
+                    rgba(12, 13, 19) 97%);
+        }
+
+        .wrapper::after {
+            bottom: 0;
+            opacity: 1;
+            background-image: linear-gradient(to bottom,
+                    transparent 46%,
+                    rgba(12, 13, 19, 0.5) 68%,
+                    rgba(12, 13, 19) 97%);
+        }
+
+        .candidate-card:hover .wrapper::before,
+        .wrapper::after {
+            opacity: 1;
+        }
+
+        .candidate-card:hover .wrapper::after {
+            height: 120px;
+        }
+
+        .candidate-card:hover .cover-image {
+            filter: blur(2px);
+        }
+
+        .title-image {
+            position: absolute;
+            width: 200px;
+            bottom: 70px;
+            transition: 0.5s ease;
+            z-index: 2;
+        }
+
+        .candidate-card:hover .title-image {
+            transform: translate3d(0%, -50px, 100px);
+        }
+
+        .character-image {
+            width: 200px;
+            opacity: 0;
+            transition: 0.5s ease;
+            position: absolute;
+            z-index: 1;
+            bottom: 0;
+        }
+
+        .candidate-card:hover .character-image {
+            opacity: 1;
+            transform: translate3d(0%, -10.5%, 400px);
+        }
+
+        .candidate-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: 700;
+            z-index: 100;
+            animation: pulse 0.5s ease;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+        }
+
+        .candidate-info {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: white;
+            z-index: 3;
+            width: 90%;
+        }
+
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .candidate-vision {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .voting-section {
+            display: none;
+        }
+
+        .voting-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .success-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: pulse 1s ease;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --card-height: 400px;
+            }
+
+            .candidates-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .step-indicator {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .title-image,
+            .character-image {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="voting-header">
+            <h1>🗳️ Pemilihan OSIS & MPK</h1>
+            <p>Pilih kandidat terbaik untuk sekolah kita</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step-osis">
+                <div class="step-number">1</div>
+                <span>Pilih Ketua OSIS</span>
+            </div>
+            <div class="step" id="step-mpk">
+                <div class="step-number">2</div>
+                <span>Pilih Ketua MPK</span>
+            </div>
+        </div>
+
+        <!-- OSIS Voting Section -->
+        <div id="osis-section" class="voting-section active">
+            <div class="card card-glass">
+                <h2 class="text-center mb-2">Pilih Ketua OSIS</h2>
+                <p class="text-center text-secondary mb-3">Klik pada kandidat untuk memilih</p>
+
+                <div id="osis-candidates" class="candidates-grid">
+                    <!-- Candidates will be loaded here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="next-to-mpk" disabled>
+                        Lanjut ke Pemilihan MPK →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MPK Voting Section -->
+        <div id="mpk-section" class="voting-section">
+            <div class="card card-glass">
+                <h2 class="text-center mb-2">Pilih Ketua MPK</h2>
+                <p class="text-center text-secondary mb-3">Klik pada kandidat untuk memilih</p>
+
+                <div id="mpk-candidates" class="candidates-grid">
+                    <!-- Candidates will be loaded here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-outline" id="back-to-osis">
+                        ← Kembali
+                    </button>
+                    <button class="btn btn-primary" id="submit-vote" disabled>
+                        <span id="submit-text">Kirim Suara</span>
+                        <span id="submit-spinner" class="spinner hidden"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div id="success-section" class="success-screen">
+            <div class="card card-glass">
+                <div class="success-icon">🎉</div>
+                <h1>Terima Kasih!</h1>
+                <p class="text-secondary mt-2 mb-3">
+                    Suara Anda telah berhasil dicatat. Terima kasih atas partisipasi Anda dalam pemilihan OSIS dan MPK.
+                </p>
+                <div class="info-box">
+                    <p>✅ Suara Anda telah tersimpan dengan aman</p>
+                    <p id="redirect-message" style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+                        Kembali ke halaman awal dalam <span id="countdown">5</span> detik...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let tokenId = null;
+        let selectedOsis = null;
+        let selectedMpk = null;
+
+        // Get token from session storage
+        window.addEventListener('DOMContentLoaded', () => {
+            tokenId = sessionStorage.getItem('tokenId');
+            if (!tokenId) {
+                window.location.href = '/';
+                return;
+            }
+            loadCandidates();
+        });
+
+        // Load candidates
+        async function loadCandidates() {
+            try {
+                // Load OSIS candidates
+                const osisRes = await fetch(`${API_URL}/candidates/osis`);
+                const osisData = await osisRes.json();
+
+                if (osisData.success) {
+                    renderCandidates('osis-candidates', osisData.candidates, 'osis');
+                }
+
+                // Load MPK candidates
+                const mpkRes = await fetch(`${API_URL}/candidates/mpk`);
+                const mpkData = await mpkRes.json();
+
+                if (mpkData.success) {
+                    renderCandidates('mpk-candidates', mpkData.candidates, 'mpk');
+                }
+            } catch (error) {
+                showAlert('error', 'Gagal memuat kandidat: ' + error.message);
+            }
+        }
+
+        // Render candidates with 3D effect
+        function renderCandidates(containerId, candidates, type) {
+            const container = document.getElementById(containerId);
+
+            // Update UI
+            document.querySelectorAll('#osis-candidates .candidate-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            document.getElementById('next-to-mpk').disabled = false;
+        } else {
+            selectedMpk = candidateId;
+            // Update UI
+            document.querySelectorAll('#mpk-candidates .candidate-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            document.getElementById('submit-vote').disabled = false;
+        }
+        }
+
+        // Navigation
+        document.getElementById('next-to-mpk').addEventListener('click', () => {
+            document.getElementById('osis-section').classList.remove('active');
+            document.getElementById('mpk-section').classList.add('active');
+            document.getElementById('step-osis').classList.remove('active');
+            document.getElementById('step-osis').classList.add('completed');
+            document.getElementById('step-mpk').classList.add('active');
+            window.scrollTo(0, 0);
+        });
+
+        document.getElementById('back-to-osis').addEventListener('click', () => {
+            document.getElementById('mpk-section').classList.remove('active');
+            document.getElementById('osis-section').classList.add('active');
+            document.getElementById('step-mpk').classList.remove('active');
+            document.getElementById('step-osis').classList.remove('completed');
+            document.getElementById('step-osis').classList.add('active');
+            window.scrollTo(0, 0);
+        });
+
+        // Submit votes
+        document.getElementById('submit-vote').addEventListener('click', async () => {
+            const submitBtn = document.getElementById('submit-vote');
+            const submitText = document.getElementById('submit-text');
+            const submitSpinner = document.getElementById('submit-spinner');
+
+            submitBtn.disabled = true;
+            submitText.classList.add('hidden');
+            submitSpinner.classList.remove('hidden');
+
+            try {
+                // Submit OSIS vote
+                const osisRes = await fetch(`${API_URL}/votes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tokenId, candidateId: selectedOsis })
+                });
+
+                if (!osisRes.ok) {
+                    const error = await osisRes.json();
+                    throw new Error(error.error || 'Gagal mengirim suara OSIS');
+                }
+
+                // Submit MPK vote
+                const mpkRes = await fetch(`${API_URL}/votes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tokenId, candidateId: selectedMpk })
+                });
+
+                if (!mpkRes.ok) {
+                    const error = await mpkRes.json();
+                    throw new Error(error.error || 'Gagal mengirim suara MPK');
+                }
+
+                // Show success screen
+                document.getElementById('mpk-section').classList.remove('active');
+                document.getElementById('success-section').classList.add('active');
+                sessionStorage.removeItem('tokenId');
+
+                // Start countdown and redirect after 5 seconds
+                let countdown = 5;
+                const countdownElement = document.getElementById('countdown');
+
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdownElement) {
+                        countdownElement.textContent = countdown;
+                    }
+
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        window.location.href = '/';
+                    }
+                }, 1000);
+
+            } catch (error) {
+                showAlert('error', error.message);
+                submitBtn.disabled = false;
+                submitText.classList.remove('hidden');
+                submitSpinner.classList.add('hidden');
+            }
+        });
+
+        // Show alert
+        function showAlert(type, message) {
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+    </script>
+</body>
+
+</html>

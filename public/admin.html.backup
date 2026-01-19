@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pemilihan OSIS & MPK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            max-width: 450px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        #admin-dashboard {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        #admin-dashboard.active {
+            display: block;
+        }
+
+        .admin-header {
+            background: var(--gradient-primary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            color: white;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--gradient-primary);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            color: white;
+            text-align: center;
+        }
+
+        .stat-card.secondary {
+            background: var(--gradient-secondary);
+        }
+
+        .stat-card.success {
+            background: var(--gradient-success);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+        }
+
+        .chart-bar {
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .chart-bar-bg {
+            background: var(--bg-tertiary);
+            height: 30px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-full);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .token-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+        }
+
+        .token-code {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        .candidate-form {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+        }
+
+        .candidate-list-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .candidate-photo-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            background: var(--gradient-primary);
+        }
+
+        .candidate-details {
+            flex: 1;
+        }
+
+        .candidate-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            width: 100%;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: var(--radius-md);
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-card card card-glass">
+            <div class="text-center mb-3">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🔐</div>
+                <h1 style="font-size: 2rem;">Admin Login</h1>
+                <p class="text-secondary">Pemilihan OSIS & MPK</p>
+            </div>
+
+            <div id="login-alert"></div>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="input" required autocomplete="username">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="input" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="login-btn">
+                    <span id="login-text">Login</span>
+                    <span id="login-spinner" class="spinner hidden"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard">
+        <div class="container">
+            <div class="admin-header">
+                <div>
+                    <h1>🎯 Admin Dashboard</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0;">Pemilihan OSIS & MPK</p>
+                </div>
+                <button class="btn btn-outline" onclick="logout()" style="color: white; border-color: white;">
+                    Logout
+                </button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-total-votes">0</div>
+                    <div class="stat-label">Total Suara</div>
+                </div>
+                <div class="stat-card secondary">
+                    <div class="stat-number" id="stat-total-tokens">0</div>
+                    <div class="stat-label">Total Token</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-number" id="stat-used-tokens">0</div>
+                    <div class="stat-label">Token Terpakai</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-remaining-tokens">0</div>
+                    <div class="stat-label">Token Tersisa</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('statistics')">📊 Statistik</button>
+                <button class="tab" onclick="switchTab('tokens')">🎫 Token</button>
+                <button class="tab" onclick="switchTab('candidates')">👥 Kandidat</button>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="tab-statistics" class="tab-content active">
+                <div class="card">
+                    <h2 class="mb-2">Statistik Pemilihan OSIS</h2>
+                    <div id="osis-chart"></div>
+                </div>
+
+                <div class="card mt-3">
+                    <h2 class="mb-2">Statistik Pemilihan MPK</h2>
+                    <div id="mpk-chart"></div>
+                </div>
+            </div>
+
+            <!-- Tokens Tab -->
+            <div id="tab-tokens" class="tab-content">
+                <div class="card">
+                    <h2 class="mb-2">Generate Token</h2>
+                    <form id="generate-token-form" class="flex gap-2">
+                        <div class="input-group" style="flex: 1; margin: 0;">
+                            <input type="number" id="token-count" class="input" placeholder="Jumlah token" min="1"
+                                max="1000" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span id="gen-text">Generate</span>
+                            <span id="gen-spinner" class="spinner hidden"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="flex-between mb-2">
+                        <h2>Daftar Token</h2>
+                        <button class="btn btn-sm btn-secondary" onclick="loadTokens()">🔄 Refresh</button>
+                    </div>
+                    <div id="token-list" class="token-list"></div>
+                </div>
+            </div>
+
+            <!-- Candidates Tab -->
+            <div id="tab-candidates" class="tab-content">
+                <div class="card">
+                    <h2 class="mb-2">Tambah Kandidat</h2>
+                    <form id="candidate-form" class="candidate-form">
+                        <div class="grid grid-2">
+                            <div class="input-group">
+                                <label for="candidate-name">Nama Lengkap</label>
+                                <input type="text" id="candidate-name" class="input" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="candidate-type">Posisi</label>
+                                <select id="candidate-type" class="input" required>
+                                    <option value="">Pilih Posisi</option>
+                                    <option value="osis">Ketua OSIS</option>
+                                    <option value="mpk">Ketua MPK</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="candidate-vision">Visi</label>
+                            <textarea id="candidate-vision" class="input" rows="3"></textarea>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="card mt-3">
+                    <h2 class="mb-2">Kandidat OSIS</h2>
+                    <div id="osis-candidates-list"></div>
+                </div>
+
+                <div class="card mt-3">
+                    <h2 class="mb-2">Kandidat MPK</h2>
+                    <div id="mpk-candidates-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+
+</html>

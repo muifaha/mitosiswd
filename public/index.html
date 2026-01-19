@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemilihan OSIS & MPK - Masukkan Token</title>
+  <meta name="description" content="Sistem Pemilihan Ketua OSIS dan MPK - Masukkan token untuk memulai voting">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .token-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .token-card {
+      max-width: 500px;
+      width: 100%;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: var(--shadow-glow);
+      animation: pulse 2s ease infinite;
+    }
+
+    .token-input-wrapper {
+      position: relative;
+    }
+
+    .token-input-wrapper::before {
+      content: '🎫';
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      pointer-events: none;
+    }
+
+    .token-input {
+      padding-left: 4rem;
+      font-size: 1.125rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .info-box {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .info-box p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .feature {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="token-container">
+    <div class="token-card card card-glass">
+      <div class="logo">🗳️</div>
+      
+      <div class="header">
+        <h1 style="font-size: 2rem;">Pemilihan OSIS & MPK</h1>
+        <p>Masukkan token untuk memulai voting</p>
+      </div>
+
+      <div id="alert-container"></div>
+
+      <form id="token-form">
+        <div class="input-group">
+          <label for="token">Token Voting</label>
+          <div class="token-input-wrapper">
+            <input 
+              type="text" 
+              id="token" 
+              class="input token-input" 
+              placeholder="TOKEN-XXXXX-XXXX"
+              required
+              autocomplete="off"
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn">
+          <span id="btn-text">Mulai Voting</span>
+          <span id="btn-spinner" class="spinner hidden"></span>
+        </button>
+      </form>
+
+      <div class="info-box">
+        <p>💡 Token hanya dapat digunakan satu kali. Pastikan Anda memasukkan token dengan benar.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-text">Aman & Terpercaya</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-text">Cepat & Mudah</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-text">Satu Token Satu Suara</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <div class="feature-text">Hasil Real-time</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

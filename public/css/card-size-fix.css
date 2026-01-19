@@ -1,0 +1,171 @@
+/* Default card size for mobile */
+:root {
+    --card-height: 350px !important;
+    --card-width: calc(var(--card-height) / 1.5) !important;
+}
+
+.wrapper {
+    height: var(--card-height) !important;
+}
+
+.character-image {
+    width: 140px !important;
+}
+
+/* Tablet: Medium cards */
+@media (min-width: 768px) and (max-width: 1024px) {
+    :root {
+        --card-height: 380px !important;
+    }
+
+    .character-image {
+        width: 155px !important;
+    }
+}
+
+/* Desktop: Large cards */
+@media (min-width: 1025px) {
+    :root {
+        --card-height: 420px !important;
+    }
+
+    .character-image {
+        width: 170px !important;
+    }
+}
+
+/* Responsive grid layout for candidates */
+.candidates-grid {
+    display: grid !important;
+    gap: 2rem !important;
+    margin-bottom: 80px !important;
+    width: 100% !important;
+}
+
+/* Mobile: 1 card per row (default, < 768px) */
+.candidates-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Tablet: 2 cards per row (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .candidates-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        max-width: 800px !important;
+        gap: 1.5rem !important;
+    }
+}
+
+/* Desktop: 3 cards per row (> 1025px) */
+@media (min-width: 1025px) {
+    .candidates-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        max-width: 1400px !important;
+        gap: 2rem !important;
+    }
+}
+
+/* Move candidate info BELOW the card with gap */
+.candidate-info {
+    position: absolute !important;
+    bottom: -60px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    text-align: center !important;
+    color: var(--text-primary) !important;
+    width: 90% !important;
+    z-index: 100 !important;
+    filter: blur(0) !important;
+}
+
+/* Wrapper for card + info */
+.candidate-wrapper {
+    color: var(--text-primary) !important;
+    text-shadow: none !important;
+}
+
+.candidate-name {
+    color: var(--text-primary) !important;
+}
+
+/* Keep selected card in hover state */
+.candidate-card.selected .wrapper {
+    transform: perspective(900px) translateY(-5%) rotateX(25deg) translateZ(0) !important;
+    box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75) !important;
+}
+
+.candidate-card.selected .wrapper::before,
+.candidate-card.selected .wrapper::after {
+    opacity: 1 !important;
+}
+
+.candidate-card.selected .wrapper::after {
+    height: 120px !important;
+}
+
+.candidate-card.selected .cover-image {
+    filter: blur(2px) !important;
+}
+
+.candidate-card.selected .character-image {
+    opacity: 1 !important;
+    transform: translate3d(0%, -10.5%, 400px) !important;
+}
+
+/* Prevent blur on candidate-info when selected */
+.candidate-card.selected .candidate-info {
+    filter: blur(0) !important;
+}
+
+/* Vision/Mission Overlay - appears on hover above character */
+.vision-overlay {
+    position: absolute !important;
+    bottom: 4px !important;
+    left: 4px !important;
+    right: 4px !important;
+    width: calc(100% - 8px) !important;
+    height: calc(100% - 8px) !important;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent) !important;
+    padding: 0.75rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    opacity: 0 !important;
+    transition: all 0.5s ease !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+    border-radius: 0 0 10px 10px !important;
+}
+
+.candidate-card:hover .vision-overlay {
+    opacity: 1 !important;
+    transform: perspective(900px) translateY(-5%) rotateX(25deg) translateZ(0) !important;
+}
+
+.vision-overlay h4 {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.2rem !important;
+    color: var(--primary-light) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.vision-overlay p {
+    font-size: 0.85rem !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    opacity: 0.95 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 4 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+
+.vision-overlay .mission {
+    margin-top: 0.4rem !important;
+}

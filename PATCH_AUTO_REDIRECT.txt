@@ -1,0 +1,29 @@
+// Patch untuk voting.html - Auto Redirect setelah Success
+// Tambahkan kode ini setelah line 423 (sessionStorage.removeItem('tokenId');)
+
+// TAMBAHKAN KODE INI:
+
+                // Start countdown and redirect after 5 seconds
+                let countdown = 5;
+                const countdownElement = document.getElementById('countdown');
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdownElement) {
+                        countdownElement.textContent = countdown;
+                    }
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        window.location.href = '/';
+                    }
+                }, 1000);
+
+// DAN UBAH HTML SUCCESS SCREEN (line 278-280) MENJADI:
+
+                <div class="info-box">
+                    <p>✅ Suara Anda telah tersimpan dengan aman</p>
+                    <p id="redirect-message" style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+                        Kembali ke halaman awal dalam <span id="countdown">5</span> detik...
+                    </p>
+                </div>
