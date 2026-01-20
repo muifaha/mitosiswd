@@ -1,5 +1,8 @@
 // API Configuration
-const API_URL = 'http://localhost:3000/api';
+// Automatically detect if running locally or on remote server
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'
+    : `http://${window.location.hostname}:3000/api`;
 
 // Check voting mode on page load
 window.addEventListener('DOMContentLoaded', async () => {
