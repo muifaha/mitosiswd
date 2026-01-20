@@ -17,8 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
     const loginBtn = document.getElementById('login-btn');
     const loginText = document.getElementById('login-text');
     const loginSpinner = document.getElementById('login-spinner');
@@ -219,8 +219,10 @@ function renderTokens(tokens) {
       </div>
       <div class="flex gap-1" style="align-items: center;">
         ${token.is_used
-            ? `<span class="badge badge-success">Terpakai</span>`
-            : `<span class="badge badge-warning">Belum Dipakai</span>`
+            ? `<span class="badge badge-success">✓ Terpakai</span>`
+            : token.in_progress
+                ? `<span class="badge badge-info">⏳ Sedang Dipakai</span>`
+                : `<span class="badge badge-warning">○ Belum Dipakai</span>`
         }
         <button class="btn btn-sm btn-danger" onclick="deleteToken(${token.id})">🗑️</button>
       </div>

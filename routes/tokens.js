@@ -58,7 +58,7 @@ router.post('/generate', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const [tokens] = await db.query(
-            'SELECT id, token_code, is_used, used_at, created_at FROM tokens ORDER BY created_at DESC'
+            'SELECT id, token_code, is_used, in_progress, used_at, created_at FROM tokens ORDER BY created_at DESC'
         );
 
         res.json({ success: true, tokens });
@@ -79,7 +79,7 @@ router.post('/validate', async (req, res) => {
         }
 
         const [tokens] = await db.query(
-            'SELECT id, is_used FROM tokens WHERE token_code = ?',
+            'SELECT id, is_used, in_progress FROM tokens WHERE token_code = ?',
             [token]
         );
 
@@ -90,6 +90,16 @@ router.post('/validate', async (req, res) => {
         if (tokens[0].is_used) {
             return res.status(400).json({ error: 'Token already used' });
         }
+
+        if (tokens[0].in_progress) {
+            return res.status(400).json({ error: 'Token is currently being used' });
+        }
+
+        // Mark token as in_progress to prevent concurrent use
+        await db.query(
+            'UPDATE tokens SET in_progress = 1 WHERE id = ?',
+            [tokens[0].id]
+        );
 
         res.json({
             success: true,
@@ -106,8 +116,9 @@ router.post('/validate', async (req, res) => {
 // Get available token (for auto mode)
 router.get('/available', async (req, res) => {
     try {
+        // Get token that is not used AND not in progress
         const [tokens] = await db.query(
-            'SELECT id, token_code FROM tokens WHERE is_used = 0 ORDER BY created_at ASC LIMIT 1'
+            'SELECT id, token_code FROM tokens WHERE is_used = 0 AND in_progress = 0 ORDER BY created_at ASC LIMIT 1'
         );
 
         if (tokens.length === 0) {
@@ -117,9 +128,9 @@ router.get('/available', async (req, res) => {
             });
         }
 
-        // Mark token as used immediately
+        // Mark token as in_progress immediately to prevent concurrent assignment
         await db.query(
-            'UPDATE tokens SET is_used = 1, used_at = CURRENT_TIMESTAMP WHERE id = ?',
+            'UPDATE tokens SET in_progress = 1 WHERE id = ?',
             [tokens[0].id]
         );
 
