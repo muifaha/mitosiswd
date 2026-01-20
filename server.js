@@ -46,12 +46,13 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server - Listen on all interfaces for network access
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`
 ╔═══════════════════════════════════════════════╗
 ║   OSIS & MPK Election System                 ║
-║   Server running on http://localhost:${PORT}   ║
+║   Server running on http://0.0.0.0:${PORT}     ║
+║   Access from network: http://<your-ip>:${PORT} ║
 ╚═══════════════════════════════════════════════╝
   `);
 });
