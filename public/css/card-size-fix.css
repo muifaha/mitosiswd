@@ -71,7 +71,7 @@
 /* Move candidate info BELOW the card with gap */
 .candidate-info {
     position: absolute !important;
-    bottom: -60px !important;
+    bottom: -80px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     text-align: center !important;
